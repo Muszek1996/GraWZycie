@@ -1,3 +1,5 @@
+import Cell from "./Cell";
+
 let drawCell = function (leftTopCornerX, leftTopCornerY, size = 2, ctx = window.ctx) {
     ctx.fillStyle = "#000000";
     ctx.fillRect(leftTopCornerX, leftTopCornerY, size, size);
@@ -11,12 +13,6 @@ let drawEmpty = function (leftTopCornerX, leftTopCornerY, size = 2, ctx = window
 let mapArrToCanvas = function (pos) {
     return window.gridSize * pos;
 };
-
-var seed = 1353456;
-function myRandom() {
-    var x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
-}
 
 let drawGrid = function (size, width = canvas.width, height = canvas.height) {
     for (let x = size; x < width; x += size) {
@@ -36,6 +32,11 @@ let drawGrid = function (size, width = canvas.width, height = canvas.height) {
 
 let generateRandomCellArr = function (arr, probabilityOfOccupied) {
 
+    arr.forEach((line,yIndex)=>{
+        line.forEach((cell,xIndex)=>{
+
+        })
+    });
 
     for (i = 0; i < arr.length; i++) {
         for(j = 0;j<arr[i].length; j++){
@@ -93,6 +94,19 @@ let drawThisCellArr = function (arr) {
     }
 };
 
+let start = function(){
+    let WCells = document.getElementById("WCells").valueAsNumber;
+    let HCells = document.getElementById("HCells").valueAsNumber;
+    let occupiedProbability = document.getElementById("occupiedProbability").valueAsNumber / 100;
+    let periodity = document.getElementById("peroid").checked;
+
+
+
+
+}
+
+
+
 let startCellAutomaton = function () {
     window.HCells = document.getElementById("HCells").valueAsNumber;
     window.WCells = document.getElementById("WCells").valueAsNumber;
@@ -105,20 +119,7 @@ let startCellAutomaton = function () {
         window.NextCellArr[i] = [];
         console.log( window.NextCellArr);
         for(j = 0;j< WCells;j++){
-            if(ThisCellArr[i][j]==1){
-                if(getNeighbourCount(i,j)>3||getNeighbourCount(i,j)<2){
-                    window.NextCellArr[i][j] = 0;
-                }else{
-                    window.NextCellArr[i][j] = 1;
-                }
 
-            }else{
-                if(getNeighbourCount(i,j)==3){
-                    window.NextCellArr[i][j] = 1;
-                }else{
-                    window. window.NextCellArr[i][j] = 0;
-                }
-            }
         }
     }
 
@@ -127,45 +128,9 @@ let startCellAutomaton = function () {
     drawGrid()
 };
 
-const mod = (x, n) => (x % n + n) % n; //modulo func for negative nbs;
-
-let getNeighbourCount = function(cellX,cellY){
-    let cells = [[[]]];
 
 
-    if (window.periodity) {
-        let neigbours = 0;
-        for (i = -1; i <= 1; i++) {
-            cells[i + 1] = [[]];
-            for (j = -1; j <= 1; j++) {
-                cells[i + 1][j + 1] = [];
-                cells[i + 1][j + 1][0] = mod((cellX + i), 55);
-                cells[i + 1][j + 1][1] = mod((cellX + j), 55);
-                console.log((cellX + i) % 55);
-                if (ThisCellArr[cells[i + 1][j + 1][0]][cells[i + 1][j + 1][1]] == 1 && (i != 0 || j != 0)) {
-                    ++neigbours;
-                }
-            }
-        }
-        console.log("X:" + cellX + "Y:" + cellY + "Nbours:" + neigbours);
-    }else{
-        let neigbours = 0;
-        for (i = -1; i <= 1; i++) {
-            cells[i + 1] = [[]];
-            for (j = -1; j <= 1; j++) {
-                cells[i + 1][j + 1] = [];
-                cells[i + 1][j + 1][0] = mod((cellX + i), 55);
-                cells[i + 1][j + 1][1] = mod((cellX + j), 55);
-                console.log((cellX + i) % 55);
-                if (ThisCellArr[cells[i + 1][j + 1][0]][cells[i + 1][j + 1][1]] == 1 && (i != 0 || j != 0)) {
-                    ++neigbours;
-                }
-            }
-        }
-        console.log("X:" + cellX + "Y:" + cellY + "Nbours:" + neigbours);
-    }
 
-};
 
 let init = function () {
     window.canvas = document.getElementById("workingCanvas");
@@ -176,6 +141,7 @@ let init = function () {
     window.WCells = document.getElementById("WCells").valueAsNumber;
 
     window.canvas.width = window.innerWidth - 40;
+    window.canvas.height = HCells * window.gridSize;
     window.currentTime = 0;
     window.occupiedProbability = document.getElementById("occupiedProbability").valueAsNumber / 100;
     window.rule = document.getElementById("rule").options[document.getElementById("rule").selectedIndex].value;
@@ -202,34 +168,4 @@ let init = function () {
     drawGrid(window.gridSize);
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-    window.debugVars = init();
-    document.getElementById("workingCanvas").addEventListener('click', function (event) {
 
-            let xClickedCell = Math.floor(getCursorPosition(canvas, event)[0] / window.gridSize);
-            let yClickedCell = Math.floor(getCursorPosition(canvas, event)[1] / window.gridSize);
-
-            if (ThisCellArr[xClickedCell][yClickedCell] == 1) ThisCellArr[xClickedCell][yClickedCell] = 0;
-            else ThisCellArr[xClickedCell][yClickedCell] = 1;
-
-
-            if (ThisCellArr[xClickedCell][yClickedCell] == 1)
-                drawCell(mapArrToCanvas(xClickedCell), mapArrToCanvas(yClickedCell), window.gridSize);
-            else {
-                drawEmpty(mapArrToCanvas(xClickedCell), mapArrToCanvas(yClickedCell), window.gridSize);
-            }
-
-        getNeighbourCount(0,0);
-
-    }, false);
-});
-
-function getCursorPosition(canvas, event) {
-    var x, y;
-
-    let canoffset = canvas.getBoundingClientRect();
-    x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
-    y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor((canoffset.top)) + 1;
-
-    return [x, y];
-}
